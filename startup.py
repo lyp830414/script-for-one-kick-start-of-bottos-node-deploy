@@ -224,7 +224,9 @@ class Common(object):
 		 if 'mongod' in proc.name():
 		      proc.kill()
          except OSError, e:
-             pass
+        	pass 
+	 except Exception as e:
+	        pass
 
     def download_official_bcli(self):
 	import wget, tarfile
@@ -272,7 +274,7 @@ class Common(object):
         print '\nPlease Wait for downloading release packages from bottos official site...\n'
         DATA_URL = 'https://github.com/bottos-project/bottos/releases/download/tag_bottos3.2/bottos.tar.gz'
 
-        #wget.download(DATA_URL, out='bottos.tar.gz')
+        wget.download(DATA_URL, out='bottos.tar.gz')
         t = tarfile.open('bottos.tar.gz')
         pathdir = './extract_official'
         print 'pathdir--->', pathdir
@@ -343,7 +345,7 @@ class bottos_node_deploy (object):
 	
 	# security code parts, could not be published by current #
 
-	importV git
+	import git
 	global GLOBAL_BOTTOS_DIR
 	print 'Start downloading bottos code.....'
 	
@@ -419,7 +421,7 @@ class bottos_node_deploy (object):
 	        cmd()
 	
 	os.chmod(GLOBAL_BOTTOS_DIR, stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
-	os.chmod(GOPATH, stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
+	#os.chmod(GOPATH, stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
 	#os.chmod(BOTTOS_PROGRAM_WORK_DIR, stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
 	print '\n===== installation is done =======\n'
         pass
