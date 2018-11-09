@@ -573,7 +573,7 @@ class bottos_node_profile(object):
 				{
 					'Node':
 					{
-						'DataDir' : "./datadir"
+						'DataDir' : "/home/bottos/bottos_dir/work_dir/datadir"
 					},
 					'Rest':
 					{
