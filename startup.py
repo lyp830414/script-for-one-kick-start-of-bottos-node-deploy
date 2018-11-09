@@ -30,7 +30,6 @@ GOPATH = '/home/bottos/go'  				    #
 GOROOT = '/usr/lib/go'					    #	
 #############################################################
 
-
 def predo_cmd(cmd, *optional):
     stderr = ''
     print cmd
@@ -237,7 +236,7 @@ class Common(object):
 	
 	wget.download(DATA_URL, out='bottos.tar.gz')
 	t = tarfile.open('bottos.tar.gz')
-	pathdir = BOTTOS_PROGRAM_WORK_DIR + '/extract_official'
+	pathdir = './extract_official'
 	print 'pathdir--->', pathdir
 	if not os.path.isdir(pathdir):
 		os.makedirs(pathdir)
@@ -255,7 +254,7 @@ class Common(object):
 	
 	wget.download(DATA_URL, out='bottos.tar.gz')
 	t = tarfile.open('bottos.tar.gz')
-	pathdir = BOTTOS_PROGRAM_WORK_DIR + '/extract_official'
+	pathdir = './extract_official'
 	print 'pathdir--->', pathdir
 	if not os.path.isdir(pathdir):
 		os.makedirs(pathdir)
@@ -274,10 +273,9 @@ class Common(object):
         print '\nPlease Wait for downloading release packages from bottos official site...\n'
         DATA_URL = 'https://github.com/bottos-project/bottos/releases/download/tag_bottos3.3/bottos.tar.gz'
 
-        wget.download(DATA_URL, out='bottos.tar.gz')
+	wget.download(DATA_URL, out='bottos.tar.gz')
         t = tarfile.open('bottos.tar.gz')
-        pathdir = BOTTOS_PROGRAM_WORK_DIR + '/extract_official'
-        print 'pathdir--->', pathdir
+        pathdir = './extract_official'
         if not os.path.isdir(pathdir):
                 print 'makedir:', pathdir
                 os.makedirs(pathdir)
@@ -286,7 +284,7 @@ class Common(object):
 	
 	if os.path.exists(BOTTOS_PROGRAM_WORK_DIR):
 		shutil.rmtree(BOTTOS_PROGRAM_WORK_DIR)
-        
+	
 	shutil.copytree(pathdir + '/bottos', BOTTOS_PROGRAM_WORK_DIR)
         os.remove('bottos.tar.gz')
         shutil.rmtree(pathdir)
@@ -1224,11 +1222,10 @@ if __name__ == '__main__':
     if os.path.exists(conf):
 		with open(conf, 'r') as f:
 			for line in f.readlines():
-				if 'GLOBAL_BOTTOS_DIR' in line.split(':'):
-					GLOBAL_BOTTOS_DIR = line.split(':')[1]
-				elif 'BOTTOS_PROGRAM_WORK_DIR' in line.split(':'):
-					BOTTOS_PROGRAM_WORK_DIR = line.split(':')[1]
-    				
+				if 'GLOBAL_BOTTOS_DIR' in line.split(':\n'):
+					GLOBAL_BOTTOS_DIR = line.split(':\n')[1]
+				elif 'BOTTOS_PROGRAM_WORK_DIR' in line.split(':\n'):
+					BOTTOS_PROGRAM_WORK_DIR = line.split(':\n')[1]
     elif not sys.argv[1] == 'install':
 	print '\n****** WARNING: you have no .installation_config.txt file under current directory, so use default GLOBAL_BOTTOS_DIR and BOTTOS_PROGRAM_WORK_DIR ***********\n'    
 
