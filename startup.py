@@ -233,7 +233,7 @@ class Common(object):
 	if os.path.exists(BOTTOS_PROGRAM_WORK_DIR+'/bcli'):
 		return
 	print '\nPlease Wait for downloading bcli tool from bottos official site...\n'
-	DATA_URL = 'https://github.com/bottos-project/bottos/releases/download/tag_bottos3.2/bottos.tar.gz'
+	DATA_URL = 'https://github.com/bottos-project/bottos/releases/download/tag_bottos3.3/bottos.tar.gz'
 	
 	wget.download(DATA_URL, out='bottos.tar.gz')
 	t = tarfile.open('bottos.tar.gz')
@@ -321,7 +321,7 @@ class bottos_node_deploy (object):
         lines = ''
         self.replace_mongo_word('auth', '#auth=true\n', '#noauth')
         common.do_cmd('service mongodb stop; sleep 1')
-        common.do_cmd('mongod --port 27017 --dbpath /var/lib/mongodb &', 'no_wait')
+        common.do_cmd('sudo mongod --port 27017 --dbpath /var/lib/mongodb &', 'no_wait')
 
         client = MongoClient('mongodb://127.0.0.1:27017/')
         client.admin.add_user('bottosadmin', 'bottosadmin', roles = [{'role': 'userAdminAnyDatabase', 'db': 'admin'}] )
@@ -1146,7 +1146,7 @@ class bottos_node_apply(object):
 			bootup_options += ' --enable-wallet'
 		if bootup_dict_profile['enable_mongodb'] == 'yes':
 			bootup_options += ' --enable-mongodb'
-			common.do_cmd('mongod --port 27017 --dbpath /var/lib/mongodb &', 'no_wait')
+			common.do_cmd('sudo mongod --port 27017 --dbpath /var/lib/mongodb &', 'no_wait')
 		if bootup_dict_profile['public_key'] and bootup_dict_profile['private_key']:
 			bootup_options += ' --delegate-signkey =%s' %bootup_dict_profile['public_key'] + ',' +bootup_dict_profile['private_key'] 
 		
@@ -1318,7 +1318,7 @@ if __name__ == '__main__':
 	    print '\n============ NOW START BOTTOS =======================\n'
 	    node_profile_obj.show_profiles()
 	    
-	    common.download_official_bcli()
+	    #common.download_official_bcli()
             
 	    if node_profile_obj.mode is 'to_bottos_net':
 		common.download_official_genesis()
