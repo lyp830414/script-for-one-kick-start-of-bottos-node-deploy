@@ -26,10 +26,10 @@ user_choice_list = {   'install_base' : 'yes',              #
                        'install_gomicro': 'no',             #
                        'install_bottos_source_code': 'no'   #
                    }	                                    #
+GOPATH = '/home/bottos/go'  				    #                                
+GOROOT = '/usr/lib/go'					    #	
 #############################################################
 
-GOPATH = GLOBAL_BOTTOS_DIR                                  
-GOROOT = '/usr/lib/go'
 
 def predo_cmd(cmd, *optional):
     stderr = ''
@@ -224,9 +224,9 @@ class Common(object):
 		 if 'mongod' in proc.name():
 		      proc.kill()
          except OSError, e:
-        	pass 
+             pass
 	 except Exception as e:
-	        pass
+	     pass
 
     def download_official_bcli(self):
 	import wget, tarfile
@@ -251,7 +251,7 @@ class Common(object):
     def download_official_genesis(self):
 	import wget, tarfile
 	print '\nPlease Wait for downloading new configurations from bottos official site...\n'
-	DATA_URL = 'https://github.com/bottos-project/bottos/releases/download/tag_bottos3.2/bottos.tar.gz'
+	DATA_URL = 'https://github.com/bottos-project/bottos/releases/download/tag_bottos3.3/bottos.tar.gz'
 	
 	wget.download(DATA_URL, out='bottos.tar.gz')
 	t = tarfile.open('bottos.tar.gz')
@@ -272,11 +272,11 @@ class Common(object):
         import wget, tarfile
 
         print '\nPlease Wait for downloading release packages from bottos official site...\n'
-        DATA_URL = 'https://github.com/bottos-project/bottos/releases/download/tag_bottos3.2/bottos.tar.gz'
+        DATA_URL = 'https://github.com/bottos-project/bottos/releases/download/tag_bottos3.3/bottos.tar.gz'
 
         wget.download(DATA_URL, out='bottos.tar.gz')
         t = tarfile.open('bottos.tar.gz')
-        pathdir = './extract_official'
+        pathdir = BOTTOS_PROGRAM_WORK_DIR + '/extract_official'
         print 'pathdir--->', pathdir
         if not os.path.isdir(pathdir):
                 print 'makedir:', pathdir
@@ -340,10 +340,8 @@ class bottos_node_deploy (object):
         pass
     
     def download_bottos_code(self):
-	
-	return
-	
 	# security code parts, could not be published by current #
+	return
 
 	import git
 	global GLOBAL_BOTTOS_DIR
@@ -420,6 +418,11 @@ class bottos_node_deploy (object):
 	    	print '\nbegin installing cmd: ', cmd.__name__
 	        cmd()
 	
+	       
+	with open('.installation_config.txt', 'w') as f:
+               f.writelines('GLOBAL_BOTTOS_DIR:'+ GLOBAL_BOTTOS_DIR + '\n')
+               f.writelines('BOTTOS_PROGRAM_WORK_DIR:' + BOTTOS_PROGRAM_WORK_DIR + '\n')	
+
 	os.chmod(GLOBAL_BOTTOS_DIR, stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
 	#os.chmod(GOPATH, stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
 	#os.chmod(BOTTOS_PROGRAM_WORK_DIR, stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
@@ -507,7 +510,6 @@ class bottos_node_build(object):
 	def build_bottos(self):
 		current_path = os.getcwd()
 		cmd = 'cd ' + self.bottos_dir + '; make bottos'
-		print cmd
 		
 		common.do_cmd(cmd)
 		
@@ -1209,11 +1211,27 @@ class bottos_node_apply(object):
 
 
 if __name__ == '__main__':
-    	
+    _ = GOPATH
+    _ = GLOBAL_BOTTOS_DIR
+    _ = BOTTOS_PROGRAM_WORK_DIR		
+    
+	
     if len(sys.argv) <= 1 or sys.argv[1] in ['--help', '-h']:
 	   common.print_help()
 	   exit(1)
    
+    conf = '.installation_config.txt'
+    if os.path.exists(conf):
+		with open(conf, 'r') as f:
+			for line in f.readlines():
+				if 'GLOBAL_BOTTOS_DIR' in line.split(':'):
+					GLOBAL_BOTTOS_DIR = line.split(':')[1]
+				elif 'BOTTOS_PROGRAM_WORK_DIR' in line.split(':'):
+					BOTTOS_PROGRAM_WORK_DIR = line.split(':')[1]
+    				
+    elif not sys.argv[1] == 'install':
+	print '\n****** WARNING: you have no .installation_config.txt file under current directory, so use default GLOBAL_BOTTOS_DIR and BOTTOS_PROGRAM_WORK_DIR ***********\n'    
+
     if sys.argv[1] == 'install':
 	   if os.geteuid() != 0:
                        print "The required packages must be installed under root user. Please turn into root account first."
@@ -1296,15 +1314,27 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'build':
 	    print '\n============ NOW BUILD BOTTOS =======================\n'
 	    node_build_obj = bottos_node_build()
+	    #node_build_obj.build_bottos()
 	    node_build_obj.build_bottos_release()
 		
     elif sys.argv[1] == 'start':
+	    
+	    #print '\n============ NOW DOWNLOAD BOTTOS =======================\n'
+	    #deploy_obj = bottos_node_deploy()
+	    #deploy_obj.install_env()
+	    
+	    #exit(1)
+	    #print '\n============ NOW BUILD BOTTOS =======================\n'
+	    #node_build_obj = bottos_node_build()
+	    #node_build_obj.build_bottos()
 
 	    node_profile_obj = bottos_node_profile()
 	    node_profile_obj.generate_default_profiles()
 	    
 	    node_profile_obj.show_profiles()
              
+	    #node_profile_obj.show_profiles( 'node_profile_info.toml', 'service_profile_info.toml')    
+	    
 	    node_profile_obj.set_profile_info('chain_profile_info.toml')
 	    	
 	    print '\n============ NOW CHECK PROFILE OF MONGO DB =======================\n'
@@ -1333,6 +1363,8 @@ if __name__ == '__main__':
 	    node_profile_obj = bottos_node_profile()
 	    node_profile_obj.show_profiles()	
     else:
+    	#obj = download_progress_bar('https://studygolang.com/dl/golang/go1.10.1.linux-amd64.tar.gz') 
+    	#obj.download_with_progressbar('./go1.10.1.linux-amd64.tar.gz')
 	common.print_help()
 
     exit(0)
